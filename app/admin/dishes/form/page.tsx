@@ -1,0 +1,154 @@
+import { getDish, createDish, updateDish } from "../../actions/dish";
+import { getCategories } from "../../actions/category";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft } from "lucide-react";
+import { ImageUpload } from "@/components/image-upload";
+import { getImageUrl } from "@/lib/s3";
+
+export default async function DishFormPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ id?: string }>;
+}) {
+    const resolvedParams = await searchParams;
+    const isEdit = !!resolvedParams?.id;
+    const dishId = isEdit ? parseInt(resolvedParams.id!, 10) : null;
+
+    const [dishData, categories] = await Promise.all([
+        isEdit && dishId ? getDish(dishId) : null,
+        getCategories()
+    ]);
+
+    async function handleSubmit(formData: FormData) {
+        "use server";
+        const { uploadToS3 } = await import("@/lib/s3");
+
+        const name = formData.get("name") as string;
+        const price = parseInt(formData.get("price") as string, 10);
+        const description = formData.get("description") as string;
+
+        const imageFile = formData.get("imageFile") as File | null;
+        const imageFileRemoved = formData.get("imageFileRemoved") === "true";
+        let imageUrl = dishData?.imageUrl || "";
+
+        if (imageFileRemoved) {
+            imageUrl = "";
+        }
+
+        if (imageFile && imageFile.size > 0) {
+            imageUrl = await uploadToS3(imageFile);
+        }
+
+        // Get all checked category IDs
+        const categoryIds = formData.getAll("categories").map(id => parseInt(id as string, 10));
+
+        if (isEdit && dishId) {
+            await updateDish(dishId, { name, price, description, imageUrl, categoryIds });
+        } else {
+            await createDish({ name, price, description, imageUrl, categoryIds });
+        }
+
+        redirect("/admin/dishes");
+    }
+
+    return (
+        <div className="max-w-2xl mx-auto space-y-6">
+            <div className="flex items-center gap-4">
+                <Button variant="outline" size="icon" asChild>
+                    <Link href="/admin/dishes">
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                </Button>
+                <h1 className="text-3xl font-bold tracking-tight">
+                    {isEdit ? "Edit Dish" : "Add Dish"}
+                </h1>
+            </div>
+
+            <div className="rounded-md border bg-card text-card-foreground p-6 shadow-sm">
+                <form action={handleSubmit} className="space-y-6">
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="name">Dish Name</Label>
+                            <Input
+                                id="name"
+                                name="name"
+                                defaultValue={dishData?.name || ""}
+                                required
+                                placeholder="e.g. Margherita Pizza"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="price">Price</Label>
+                            <Input
+                                id="price"
+                                name="price"
+                                type="number"
+                                min="0"
+                                defaultValue={dishData?.price || ""}
+                                required
+                                placeholder="e.g. 499"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Dish Image</Label>
+                            <ImageUpload
+                                defaultValue={dishData?.imageUrl ? getImageUrl(dishData.imageUrl) : undefined}
+                                name="imageFile"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="description">Description (Optional)</Label>
+                        <Input
+                            id="description"
+                            name="description"
+                            defaultValue={dishData?.description || ""}
+                            placeholder="A delicious classic pizza..."
+                        />
+                    </div>
+
+                    <div className="space-y-3">
+                        <Label>Categories</Label>
+                        <div className="grid grid-cols-2 gap-2 border rounded-md p-4 bg-muted/20">
+                            {categories.length === 0 ? (
+                                <p className="text-sm text-muted-foreground col-span-2">No categories found. Create some first.</p>
+                            ) : (
+                                categories.map(cat => (
+                                    <div key={cat.id} className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            id={`category-${cat.id}`}
+                                            name="categories"
+                                            value={cat.id}
+                                            defaultChecked={dishData?.categoryIds?.includes(cat.id)}
+                                            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                        />
+                                        <Label htmlFor={`category-${cat.id}`} className="font-normal cursor-pointer">
+                                            {cat.name}
+                                        </Label>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end gap-4 pt-4 border-t">
+                        <Button variant="outline" asChild>
+                            <Link href="/admin/dishes">Cancel</Link>
+                        </Button>
+                        <Button type="submit">
+                            {isEdit ? "Update Dish" : "Save Dish"}
+                        </Button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}
