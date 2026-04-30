@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { getImageUrl } from "@/lib/s3";
+import { DeleteDishButton } from "@/components/delete-dish-button";
 
 export default async function DishesPage() {
     const dishes = await getDishes();
@@ -58,15 +59,7 @@ export default async function DishesPage() {
                                                     <span className="sr-only">Edit</span>
                                                 </Link>
                                             </Button>
-                                            <form action={async () => {
-                                                "use server";
-                                                await deleteDish(d.id);
-                                            }}>
-                                                <Button type="submit" variant="destructive" size="icon">
-                                                    <Trash2 className="h-4 w-4" />
-                                                    <span className="sr-only">Delete</span>
-                                                </Button>
-                                            </form>
+                                            <DeleteDishButton id={d.id} />
                                         </div>
                                     </TableCell>
                                 </TableRow>

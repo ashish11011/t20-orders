@@ -1,5 +1,6 @@
-import { getCategories, deleteCategory } from "../actions/category";
+import { getCategories } from "../actions/category";
 import Link from "next/link";
+import { DeleteCategoryButton } from "@/components/delete-category-button";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Edit, Trash2 } from "lucide-react";
@@ -51,15 +52,7 @@ export default async function CategoriesPage() {
                                                     <span className="sr-only">Edit</span>
                                                 </Link>
                                             </Button>
-                                            <form action={async () => {
-                                                "use server";
-                                                await deleteCategory(cat.id);
-                                            }}>
-                                                <Button type="submit" variant="destructive" size="icon">
-                                                    <Trash2 className="h-4 w-4" />
-                                                    <span className="sr-only">Delete</span>
-                                                </Button>
-                                            </form>
+                                            <DeleteCategoryButton id={cat.id} />
                                         </div>
                                     </TableCell>
                                 </TableRow>
