@@ -80,7 +80,7 @@ export function DishCard({ dish }: { dish: any }) {
 
     return (
         <>
-            <div className=" border-b border-dashed py-8 w-full bg-card  shadow-sm overflow-hidden flex group hover:shadow-md px-4 transition-all duration-300">
+            <div className=" border-b border-dashed py-4 w-full bg-card  shadow-sm overflow-hidden flex group hover:shadow-md px-4 transition-all duration-300">
                 <div className=" flex flex-col grow">
                     <h3 className="font-semibold text-lg leading-tight tracking-tight mb-1">{dish.name}</h3>
                     <div className="flex items-center justify-between ">
@@ -94,7 +94,7 @@ export function DishCard({ dish }: { dish: any }) {
 
                 </div>
 
-                <div className="relative w-32 aspect-square shrink-0 overflow-hidden">
+                <div className="relative h-24 w-28 shrink-0 overflow-hidden">
                     {dish.imageUrl ? (
                         <img
                             src={getImageUrl(dish.imageUrl)}
@@ -107,7 +107,7 @@ export function DishCard({ dish }: { dish: any }) {
 
                     <div className=" absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
                         {quantity === 0 ? (
-                            <Button onClick={handleAdd} size="sm" className="rounded-full shadow-sm hover:shadow active:scale-95 transition-all whitespace-nowrap">
+                            <Button onClick={handleAdd} size="sm" className="rounded-full shadow-sm hover:shadow active:scale-95 transition-all whitespace-nowrap px-4">
                                 {/* <ShoppingCart className="h-4 w-4 mr-2" /> */}
                                 {(hasOptions || hasAddons) ? "Add +" : "Add"}
                             </Button>
@@ -139,8 +139,8 @@ export function DishCard({ dish }: { dish: any }) {
             </div>
 
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-                <DrawerContent>
-                    <div className="mx-auto w-full max-w-sm">
+                <DrawerContent className=" max-w-lg w-full mx-auto">
+                    <div className="">
                         <DrawerHeader>
                             <DrawerTitle>Customize {dish.name}</DrawerTitle>
                             <DrawerDescription>Select additional options for your dish.</DrawerDescription>

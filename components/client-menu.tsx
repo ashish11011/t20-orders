@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { DishCard } from "@/components/dish-card";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 type Dish = {
     id: number;
@@ -16,30 +16,37 @@ type Dish = {
 };
 
 export function ClientMenu({ initialDishes }: { initialDishes: any }) {
-    // const [searchQuery, setSearchQuery] = useState("");
 
-    // const filteredDishes = initialDishes.filter(dish =>
-    //     dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     (dish.description?.toLowerCase() || "").includes(searchQuery.toLowerCase())
-    // );
-    const filteredDishes = initialDishes;
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const filteredDishes = initialDishes.filter((category: any) => category.dishes.some((dish: any) => dish.name.toLowerCase().includes(searchQuery.toLowerCase()) || dish.description?.toLowerCase().includes(searchQuery.toLowerCase())));
+
+    let dishCount = filteredDishes.reduce((acc: number, category: any) => acc + category.dishes.length, 0);
 
     return (
         <>
-            <div className="px-4 sticky w-full bg-white z-999 border-b py-4 top-0">
-                {/* <InputGroup className="max-w-none w-full">
+            <div className="sticky px-4 w-full bg-white z-20 border-b py-4 top-0">
+                <InputGroup className="max-w-none w-full">
                     <InputGroupInput
                         placeholder="Search dishes..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={handleSearch}
+                        onClick={(e) => e.currentTarget.select()}
                     />
                     <InputGroupAddon>
                         <Search className="h-4 w-4 text-muted-foreground" />
                     </InputGroupAddon>
-                </InputGroup> */}
+                    <InputGroupAddon align="inline-end">{dishCount} results</InputGroupAddon>
+                    {searchQuery.trim() !== "" && <InputGroupAddon align="inline-end"><X onClick={() => setSearchQuery("")} className="h-4 w-4 text-muted-foreground" /></InputGroupAddon>}
+
+                </InputGroup>
             </div>
 
-            <main className="flex-1 container mx-auto md:px-4 py-8 max-w-7xl">
+            <main className=" w-full mx-auto py-8">
                 <div className="mb-8 px-4">
                     <h1 className=" text-2xl md:text-4xl font-extrabold tracking-tight mb-2">Our Menu</h1>
                     <p className="text-muted-foreground text-lg">Discover our delicious offerings and order right away.</p>

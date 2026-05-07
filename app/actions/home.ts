@@ -23,6 +23,9 @@ async function getMenu() {
             maxSelectOptions: dish.maxSelectOptions,
             minSelectOptions: dish.minSelectOptions,
 
+            dishPriority: dish.priority,
+            categoryPriority: category.priority,
+
             addonId: addonDish.id,
             addonName: addonDish.name,
             addonPrice: addonDish.price,
@@ -33,19 +36,21 @@ async function getMenu() {
         .leftJoin(addons, eq(dish.id, addons.dishId))
         .leftJoin(addonDish, eq(addons.addOnId, addonDish.id));
 
+    data.sort((a, b) => (b.dishPriority || 0) - (a.dishPriority || 0));
+
     const grouped = Object.values(
         data.reduce((acc, row) => {
             if (!acc[row.categoryId]) {
                 acc[row.categoryId] = {
                     id: row.categoryId,
                     name: row.categoryName,
-                    dishes: {},
+                    dishes: [],
                 };
             }
 
             if (row.dishId) {
-                if (!acc[row.categoryId].dishes[row.dishId]) {
-                    acc[row.categoryId].dishes[row.dishId] = {
+                if (!acc[row.categoryId].dishes.some((dish: any) => dish.id === row.dishId)) {
+                    acc[row.categoryId].dishes.push({
                         id: row.dishId,
                         name: row.dishName,
                         price: row.dishPrice,
@@ -55,11 +60,11 @@ async function getMenu() {
                         maxSelectOptions: row.maxSelectOptions,
                         minSelectOptions: row.minSelectOptions,
                         addons: [],
-                    };
+                    });
                 }
 
                 if (row.addonId) {
-                    acc[row.categoryId].dishes[row.dishId].addons.push({
+                    acc[row.categoryId].dishes.find((dish: any) => dish.id === row.dishId)?.addons.push({
                         id: row.addonId,
                         name: row.addonName,
                         price: row.addonPrice,
@@ -69,10 +74,8 @@ async function getMenu() {
 
             return acc;
         }, {} as any)
-    ).map((cat: any) => ({
-        ...cat,
-        dishes: Object.values(cat.dishes),
-    }));
+    )
+
 
     return grouped;
 }

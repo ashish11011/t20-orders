@@ -14,16 +14,18 @@ export async function getCategory(id: number) {
     return result[0];
 }
 
-export async function createCategory(data: { name: string }) {
+export async function createCategory(data: { name: string, priority: number }) {
     await db.insert(category).values({
         name: data.name,
+        priority: data.priority,
     });
     revalidatePath("/admin/categories");
 }
 
-export async function updateCategory(id: number, data: { name: string }) {
+export async function updateCategory(id: number, data: { name: string, priority: number }) {
     await db.update(category).set({
         name: data.name,
+        priority: data.priority,
         updatedAt: new Date(),
     }).where(eq(category.id, id));
     revalidatePath("/admin/categories");

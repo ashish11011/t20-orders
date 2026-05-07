@@ -37,7 +37,7 @@ export const dish = pgTable("dish", {
     name: varchar("name", { length: 255 }).notNull(),
     price: integer("price").notNull(),
     description: text("description"),
-    // addons: jsonb("addons").array(),
+    priority: integer("priority").notNull().default(0),
     imageUrl: varchar("image_url", { length: 255 }),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
@@ -56,6 +56,7 @@ export const table = pgTable("table", {
 export const category = pgTable("category", {
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
+    priority: integer("priority").notNull().default(0),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -96,3 +97,10 @@ export const addons = pgTable("addons", {
 }, (table) => [
     primaryKey({ columns: [table.dishId, table.addOnId] })
 ]);
+
+export const recommendedDishes = pgTable("recommended_dishes", {
+    id: serial("id").primaryKey(),
+    dishId: integer("dish_id").notNull().references(() => dish.id),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});

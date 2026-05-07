@@ -29,6 +29,20 @@
       "when": 1777724677370,
       "tag": "0003_abnormal_sinister_six",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1778094542604,
+      "tag": "0004_hard_richard_fisk",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1778096230478,
+      "tag": "0005_sturdy_richard_fisk",
+      "breakpoints": true
     }
   ]
 }

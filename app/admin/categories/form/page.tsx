@@ -16,15 +16,15 @@ export default async function CategoryFormPage({
     const categoryId = isEdit ? parseInt(resolvedParams.id!, 10) : null;
 
     const category = isEdit && categoryId ? await getCategory(categoryId) : null;
-
     async function handleSubmit(formData: FormData) {
         "use server";
         const name = formData.get("name") as string;
+        const priority = formData.get("priority") || "0";
 
         if (isEdit && categoryId) {
-            await updateCategory(categoryId, { name });
+            await updateCategory(categoryId, { name, priority: parseInt(priority.toString()) });
         } else {
-            await createCategory({ name });
+            await createCategory({ name, priority: parseInt(priority.toString()) });
         }
 
         redirect("/admin/categories");
@@ -53,6 +53,17 @@ export default async function CategoryFormPage({
                             defaultValue={category?.name || ""}
                             required
                             placeholder="e.g. Main Course"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="priority">Priority</Label>
+                        <Input
+                            id="priority"
+                            name="priority"
+                            type="number"
+                            defaultValue={category?.priority || ""}
+                            required
+                            placeholder="e.g. 1"
                         />
                     </div>
 
