@@ -7,7 +7,6 @@ export async function POST(req: Request) {
 
     subscriptions.push(body)
 
-    console.log("Saved subscription:", body)
 
     return NextResponse.json({
         success: true

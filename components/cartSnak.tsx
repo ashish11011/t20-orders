@@ -6,7 +6,6 @@ import Link from "next/link";
 
 export const CartSnak = () => {
     const cartItems = useCartStore((state) => state.items);
-    console.log(cartItems)
     if (cartItems && cartItems.length <= 0) {
         return <></>
     }

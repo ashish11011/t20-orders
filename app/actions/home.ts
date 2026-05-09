@@ -79,7 +79,6 @@ async function getMenu() {
 
 
 
-    console.log(grouped)
     return grouped.sort((a: any, b: any) => (b.categoryPriority || 0) - (a.categoryPriority || 0));
 }
 

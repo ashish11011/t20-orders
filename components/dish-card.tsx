@@ -139,89 +139,89 @@ export function DishCard({ dish }: { dish: any }) {
             </div>
 
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-                <DrawerContent className=" max-w-lg w-full mx-auto">
-                    <div className="">
-                        <DrawerHeader>
-                            <DrawerTitle>Customize {dish.name}</DrawerTitle>
-                            <DrawerDescription>Select additional options for your dish.</DrawerDescription>
-                        </DrawerHeader>
-                        <div className=" px-3">
-                            <div className=" overflow-hidden pb-0 border rounded-lg border-dashed">
-                                <div className=" bg-gray-50 px-4 py-3 border-b border-dashed">
+                <DrawerContent className=" data-[vaul-drawer-direction=bottom]:max-h-[80vh] max-w-lg w-full mx-auto">
 
-                                    <p className=" font-medium "> Add {dish.minSelectOptions} to {dish.maxSelectOptions} addons </p>
-                                </div>
-                                <div className="">
-                                    {Array.isArray(dish.dishOptions) && dish.dishOptions.map((option: any) => {
-                                        const isSelected = selectedOptions.some(o => o.id === option.id);
-                                        return (
-                                            <div
-                                                key={option.id}
-                                                className="flex items-center justify-between p-3  cursor-pointer hover:bg-muted/50"
-                                                onClick={() => toggleOption(option)}
-                                            >
-                                                <span className=" text-sm  font-medium">{option.name}</span>
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-muted-foreground">Rs. {option.price}</span>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={isSelected}
-                                                        readOnly
-                                                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                                                    />
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                    <DrawerHeader>
+                        <DrawerTitle>Customize {dish.name}</DrawerTitle>
+                        <DrawerDescription>Select additional options for your dish.</DrawerDescription>
+                    </DrawerHeader>
+                    <div className="no-scrollbar overflow-y-auto  px-3">
+                        <div className=" overflow-hidden pb-0 border rounded-lg border-dashed">
+                            <div className=" bg-gray-50 px-4 py-3 border-b border-dashed">
+
+                                <p className=" font-medium "> Addons  </p>
                             </div>
-                            <div className=" mt-6 overflow-hidden pb-0 border rounded-lg border-dashed">
-
-                                <div className=" bg-gray-50 px-4 py-3 border-b border-dashed">
-                                    <p className="font-medium">
-                                        Please select addons
-                                    </p>
-                                </div>
-
-                                <div>
-                                    {Array.isArray(dish.addons) && dish.addons.map((option: any) => {
-                                        const isSelected = selectedOptions.some(o => o.id === option.id);
-
-                                        return (
-                                            <div
-                                                key={option.id}
-                                                className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50"
-                                                onClick={() => toggleOption(option)}
-                                            >
-                                                <span className="text-sm font-medium">
-                                                    {option.name}
-                                                </span>
-
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-muted-foreground">
-                                                        Rs. {option.price}
-                                                    </span>
-
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={isSelected}
-                                                        readOnly
-                                                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                                                    />
-                                                </div>
+                            <div className="">
+                                {Array.isArray(dish.dishOptions) && dish.dishOptions.map((option: any) => {
+                                    const isSelected = selectedOptions.some(o => o.id === option.id);
+                                    return (
+                                        <div
+                                            key={option.id}
+                                            className="flex items-center justify-between p-3  cursor-pointer hover:bg-muted/50"
+                                            onClick={() => toggleOption(option)}
+                                        >
+                                            <span className=" text-sm  font-medium">{option.name}</span>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-muted-foreground">Rs. {option.price}</span>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    readOnly
+                                                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                                />
                                             </div>
-                                        );
-                                    })}
-                                </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
-                        <DrawerFooter>
-                            <Button className=" h-10" onClick={confirmAddOptions}>Add to Cart - Rs. {dish.price + selectedOptions.reduce((sum, opt) => sum + opt.price, 0)}</Button>
-                            {/* <DrawerClose asChild>
+                        <div className=" mt-6 overflow-hidden pb-0 border rounded-lg border-dashed">
+
+                            <div className=" bg-gray-50 px-4 py-3 border-b border-dashed">
+                                <p className="font-medium">
+                                    Must try
+                                </p>
+                            </div>
+
+                            <div>
+                                {Array.isArray(dish.addons) && dish.addons.map((option: any) => {
+                                    const isSelected = selectedOptions.some(o => o.id === option.id);
+
+                                    return (
+                                        <div
+                                            key={option.id}
+                                            className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/50"
+                                            onClick={() => toggleOption(option)}
+                                        >
+                                            <span className="text-sm font-medium">
+                                                {option.name}
+                                            </span>
+
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-muted-foreground">
+                                                    Rs. {option.price}
+                                                </span>
+
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    readOnly
+                                                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                                />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                    <DrawerFooter>
+                        <Button className=" h-10" onClick={confirmAddOptions}>Add to Cart - Rs. {dish.price + selectedOptions.reduce((sum, opt) => sum + opt.price, 0)}</Button>
+                        {/* <DrawerClose asChild>
                                 <Button variant="outline">Cancel</Button>
                             </DrawerClose> */}
-                        </DrawerFooter>
-                    </div>
+                    </DrawerFooter>
+
                 </DrawerContent>
             </Drawer>
         </>
