@@ -66,7 +66,7 @@ export function AdminSidebar() {
 
                                 return (
                                     <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton asChild isActive={isActive}>
+                                        <SidebarMenuButton data-xyz={!!isActive} asChild isActive={isActive}>
                                             <Link href={item.url}>
                                                 <item.icon />
                                                 <span>{item.title}</span>

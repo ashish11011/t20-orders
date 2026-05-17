@@ -82,7 +82,7 @@ async function getMenu() {
 
 
 
-    return grouped.sort((a: any, b: any) => (b.categoryPriority || 0) - (a.categoryPriority || 0));
+    return grouped.sort((a: any, b: any) => (a.categoryPriority || 0) - (b.categoryPriority || 0));
 }
 
 // ✅ cached function

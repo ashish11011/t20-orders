@@ -9,9 +9,18 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DialogUserDetails } from "@/components/DialogUserDetails";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export default function CartPage() {
     const [mounted, setMounted] = useState(false);
+    const [isOrderDone, setIsOrderDone] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsOrderDone(false);
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, [isOrderDone])
 
     const cartItems = useCartStore((state) => state.items);
     const updateQuantity = useCartStore((state) => state.updateQuantity);
@@ -33,10 +42,10 @@ export default function CartPage() {
                 <h1 className=" text-xl md:text-3xl font-extrabold tracking-tight mb-8">Your Cart</h1>
 
                 {cartItems.length === 0 ? (
-                    <EmptyCart />
+                    <EmptyCart isOrderDone={isOrderDone} />
                 ) : (
-                    <div className="grid md:grid-cols-3 gap-8">
-                        <div className="md:col-span-2 space-y-4">
+                    <div className="grid  gap-8">
+                        <div className=" space-y-4">
                             <div className="bg-card border rounded-2xl shadow-sm overflow-hidden">
                                 <div className="p-4 border-b bg-muted/30 flex justify-between items-center">
                                     <h3 className="font-semibold">{cartItems.length} Items</h3>
@@ -54,7 +63,7 @@ export default function CartPage() {
                                 </div>
                             </div>
                         </div>
-                        <OrderSummary totalAmount={totalAmount} cartItems={cartItems} clearCart={clearCart} />
+                        <OrderSummary setIsOrderDone={setIsOrderDone} totalAmount={totalAmount} cartItems={cartItems} clearCart={clearCart} />
 
                     </div>
                 )}
@@ -64,7 +73,7 @@ export default function CartPage() {
 }
 
 
-function OrderSummary({ totalAmount, cartItems, clearCart }: { totalAmount: number, cartItems: any[], clearCart: () => void }) {
+function OrderSummary({ totalAmount, cartItems, clearCart, setIsOrderDone }: { totalAmount: number, cartItems: any[], clearCart: () => void, setIsOrderDone: (value: boolean) => void }) {
     const GSTAmount = Number(totalAmount * 0.18).toFixed();
     const totalAmountWithGST = Number(totalAmount) + Number(GSTAmount);
     const [open, setOpen] = useState(false);
@@ -82,6 +91,7 @@ function OrderSummary({ totalAmount, cartItems, clearCart }: { totalAmount: numb
             });
             const result = await res.json();
             if (result.success) {
+                setIsOrderDone(true);
                 toast.success("Order placed successfully!");
                 clearCart();
                 setOpen(false);
@@ -95,7 +105,7 @@ function OrderSummary({ totalAmount, cartItems, clearCart }: { totalAmount: numb
     };
 
     return (
-        <div className="md:col-span-1">
+        <div className="w-full">
             <div className="bg-card border rounded-2xl shadow-sm p-6 sticky top-24">
                 <h3 className="font-bold text-xl mb-4">Order Summary</h3>
 
@@ -129,19 +139,21 @@ function OrderSummary({ totalAmount, cartItems, clearCart }: { totalAmount: numb
     )
 }
 
-function EmptyCart() {
+function EmptyCart({ isOrderDone }: { isOrderDone: boolean }) {
     return (
         <div className="text-center py-20 bg-card rounded-2xl border shadow-sm">
-            <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6">
+            <div className={cn("mx-auto w-24 h-24  rounded-full flex items-center justify-center mb-6", isOrderDone ? " bg-green-200" : "bg-muted")}>
                 <ShoppingBag className="h-10 w-10 text-muted-foreground" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">Your cart is empty</h2>
-            <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
-                Looks like you haven't added any delicious dishes to your cart yet.
-            </p>
-            <Button size="lg" asChild className="rounded-full">
-                <Link href="/">Browse Menu</Link>
-            </Button>
+            <h2 className="text-2xl font-bold mb-2">{isOrderDone ? "Ordered placed successfully" : "Your cart is empty"}</h2>
+            {!isOrderDone && <>
+                <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
+                    Looks like you haven't added any delicious dishes to your cart yet.
+                </p>
+                <Button size="lg" asChild className="rounded-full">
+                    <Link href="/">Browse Menu</Link>
+                </Button>
+            </>}
         </div>
     )
 }

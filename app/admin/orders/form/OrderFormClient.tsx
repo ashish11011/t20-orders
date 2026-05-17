@@ -15,8 +15,8 @@ export function OrderFormClient({ initialDishes, initialTables }: { initialDishe
     const [cart, setCart] = useState<{ dishId: number, name: string, price: number, quantity: number }[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const filteredDishes = initialDishes.filter(dish => 
-        dish.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const filteredDishes = initialDishes.filter(dish =>
+        dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (dish.description && dish.description.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
@@ -80,22 +80,22 @@ export function OrderFormClient({ initialDishes, initialTables }: { initialDishe
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
-                
-                <div className="grid sm:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-2">
+
+                <div className="grid sm:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-2">
                     {filteredDishes.length === 0 ? (
                         <p className="text-sm text-muted-foreground col-span-2 py-4">No dishes found.</p>
                     ) : (
                         filteredDishes.map(dish => (
-                            <div key={dish.id} className="flex flex-col justify-between border rounded-md p-4 bg-background">
+                            <div key={dish.id} className="flex border-b p-1 justify-between  overflow-y-auto">
                                 <div>
-                                    <h3 className="font-semibold">{dish.name}</h3>
-                                    <p className="text-sm text-muted-foreground line-clamp-2">{dish.description}</p>
-                                    <p className="mt-2 font-medium">Rs. {dish.price}</p>
+                                    <h3 className="font-semibold text-sm">{dish.name}</h3>
+                                    {/* <p className="text-sm text-muted-foreground line-clamp-2">{dish.description}</p> */}
+                                    <p className="mt-2 font-medium text-xs">Rs. {dish.price}</p>
                                 </div>
-                                <Button 
-                                    className="mt-4 w-full" 
-                                    variant="secondary" 
-                                    size="sm"
+                                <Button
+                                    className=" cursor-pointer"
+                                    variant="secondary"
+                                    size="xs"
                                     onClick={() => addToCart(dish)}
                                 >
                                     Add to Order
@@ -109,10 +109,10 @@ export function OrderFormClient({ initialDishes, initialTables }: { initialDishe
             <div className="space-y-6">
                 <div className="border rounded-md p-4 bg-card shadow-sm space-y-4">
                     <h2 className="font-semibold text-lg border-b pb-2">Order Details</h2>
-                    
+
                     <div className="space-y-2">
                         <Label htmlFor="table">Select Table (Optional)</Label>
-                        <select 
+                        <select
                             id="table"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             value={selectedTable}
@@ -162,9 +162,9 @@ export function OrderFormClient({ initialDishes, initialTables }: { initialDishe
                             <span>Total</span>
                             <span>Rs. {totalPricing}</span>
                         </div>
-                        <Button 
-                            className="w-full" 
-                            size="lg" 
+                        <Button
+                            className="w-full"
+                            size="lg"
                             disabled={cart.length === 0 || isSubmitting}
                             onClick={handleSubmit}
                         >

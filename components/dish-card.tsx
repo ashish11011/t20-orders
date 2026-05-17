@@ -142,7 +142,7 @@ export function DishCard({ dish }: { dish: any }) {
             </div>
 
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-                <DrawerContent className=" data-[vaul-drawer-direction=bottom]:max-h-[80vh] max-w-lg w-full mx-auto">
+                <DrawerContent className=" data-[vaul-drawer-direction=bottom]:max-h-[80vh] z-[999] max-w-lg w-full mx-auto">
 
                     <DrawerHeader>
                         <DrawerTitle>Customize {dish.name}</DrawerTitle>

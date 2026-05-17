@@ -2,14 +2,14 @@
 
 import db from "@/db";
 import { dish, dishCategory, addons } from "@/db/schema";
-import { eq, inArray, ilike, and } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { eq, inArray, ilike, and, asc } from "drizzle-orm";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function getDishes(searchQuery?: string) {
     if (searchQuery && searchQuery.trim() !== "") {
-        return await db.select().from(dish).where(and(ilike(dish.name, `%${searchQuery}%`), eq(dish.isDeleted, false))).orderBy(dish.createdAt);
+        return await db.select().from(dish).where(and(ilike(dish.name, `%${searchQuery}%`), eq(dish.isDeleted, false))).orderBy(asc(dish.priority), asc(dish.createdAt));
     }
-    return await db.select().from(dish).where(eq(dish.isDeleted, false)).orderBy(dish.createdAt);
+    return await db.select().from(dish).where(eq(dish.isDeleted, false)).orderBy(asc(dish.priority), asc(dish.createdAt));
 }
 
 export async function getDish(id: number) {
@@ -108,4 +108,17 @@ export async function deleteDish(id: number) {
     await db.delete(dishCategory).where(eq(dishCategory.dishId, id));
     await db.delete(dish).where(eq(dish.id, id));
     revalidatePath("/admin/dishes");
+}
+
+export async function updateDishPriorities(updates: { id: number, priority: number }[]) {
+    await db.transaction(async (tx) => {
+        for (const update of updates) {
+            await tx.update(dish)
+                .set({ priority: update.priority, updatedAt: new Date() })
+                .where(eq(dish.id, update.id));
+        }
+    });
+    revalidatePath("/admin/dishes");
+    revalidateTag("menu-data", "max");
+
 }

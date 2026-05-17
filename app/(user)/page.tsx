@@ -2,6 +2,8 @@ import { CartSnak } from "@/components/cartSnak";
 import { ClientMenu } from "@/components/client-menu";
 import { Header } from "@/components/header";
 import { getCachedMenu } from "../actions/home";
+import Link from "next/link";
+import CategoryMenuSnack from "@/components/CategoryMenuSnack";
 
 export default async function Home() {
   const data = await getCachedMenu();
@@ -12,6 +14,7 @@ export default async function Home() {
     <div className=" flex flex-col">
       <Header />
       <ClientMenu initialDishes={data} />
+      <CategoryMenuSnack data={data} />
       <CartSnak />
     </div>
   );

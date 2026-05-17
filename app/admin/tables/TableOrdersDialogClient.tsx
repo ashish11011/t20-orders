@@ -11,6 +11,7 @@ import { getRunningOrdersByTable } from "../actions/order";
 import { OrderDialogClient } from "../orders/OrderDialogClient";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export function TableOrdersDialogClient({ table }: { table: any }) {
     const [open, setOpen] = useState(false);
@@ -32,12 +33,13 @@ export function TableOrdersDialogClient({ table }: { table: any }) {
 
     return (
         <>
-            <span
+            <div
                 onClick={handleOpen}
-                className="cursor-pointer hover:underline text-primary"
+                className="cursor-pointer w-full h-full relative  flex items-center justify-center hover:underline text-primary"
             >
+                {table.isRunning && <Badge className="absolute top-1 bg-green-700 text-white font-semibold right-1 text-xs">Running</Badge>}
                 {table.name}
-            </span>
+            </div>
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className=" sm:max-w-5xl w-full">

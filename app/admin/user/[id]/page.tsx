@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { getUserById, getUserOrders } from "../../actions/user";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { PayLendingDialog } from "./pay-lending-dialog";
 
 export default async function UserDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -38,7 +40,10 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                     </div>
                     <div>
                         <p className="text-sm text-gray-500">Lending Amount</p>
-                        <p className="font-medium text-red-600">₹{user.lendingAmount}</p>
+                        <div className="flex gap-4 items-center">
+                            <p className="font-medium text-red-600">₹{user.lendingAmount}</p>
+                            <PayLendingDialog userId={userId} currentLendingAmount={user.lendingAmount || 0} />
+                        </div>
                     </div>
                     <div>
                         <p className="text-sm text-gray-500">Email Verified</p>

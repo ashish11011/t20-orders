@@ -33,3 +33,28 @@ export async function getUserOrders(userId: number) {
 
     return orders;
 }
+
+export async function payUserLending(userId: number, amount: number, paymentMethod: "paid_online" | "paid_cash") {
+    return await db.transaction(async (tx) => {
+        // Create an order with negative amount
+        await tx.insert(order).values({
+            userId: userId,
+            totalPricing: -amount,
+            status: paymentMethod,
+            isRunning: false,
+            ...(paymentMethod === "paid_online" ? { paidOnline: amount } : { paidCash: amount }),
+        });
+
+        // Deduct from user lendingAmount
+        const currentUser = await tx.select().from(user).where(eq(user.id, userId)).limit(1);
+        if (!currentUser || currentUser.length === 0) throw new Error("User not found");
+
+        const newLendingAmount = (currentUser[0].lendingAmount || 0) - amount;
+
+        await tx.update(user).set({
+            lendingAmount: newLendingAmount,
+        }).where(eq(user.id, userId));
+
+        return { success: true };
+    });
+}

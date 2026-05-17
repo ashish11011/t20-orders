@@ -30,7 +30,7 @@ export function ClientMenu({ initialDishes }: { initialDishes: any }) {
 
     return (
         <>
-            <div className="sticky px-4 w-full bg-white z-20 border-b py-4 top-16">
+            <div className="sticky px-4 w-full bg-background z-20 border-b py-4 top-16">
                 <InputGroup className="max-w-none w-full border-2 border-[#774936]">
                     <InputGroupInput
                         placeholder="Search dishes..."
@@ -52,7 +52,6 @@ export function ClientMenu({ initialDishes }: { initialDishes: any }) {
                     <h1 className=" text-2xl md:text-4xl font-extrabold tracking-tight mb-2">Our Menu</h1>
                     <p className="text-muted-foreground text-lg">Discover our delicious offerings and order right away.</p>
                 </div>
-
                 {filteredDishes.length === 0 ? (
                     <div className="text-center py-24 bg-muted/30 rounded-2xl border border-dashed">
                         <h2 className="text-xl font-semibold mb-2">No dishes found</h2>
@@ -63,7 +62,7 @@ export function ClientMenu({ initialDishes }: { initialDishes: any }) {
                         {filteredDishes.map((category: any) => {
                             if (category.dishes?.length <= 0) return null;
                             return (
-                                <div className=" mb-3 shadow">
+                                <div id={category.id} className=" mb-3 shadow">
                                     <h1 className=" bg-[#774936] text-white py-2 px-4 font-semibold">{category.name}</h1>
 
                                     {category.dishes.map((dish: any) => (

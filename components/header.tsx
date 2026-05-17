@@ -5,6 +5,7 @@ import { ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/store/cart";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export function Header() {
     const [mounted, setMounted] = useState(false);
@@ -16,10 +17,10 @@ export function Header() {
     }, []);
 
     return (
-        <header className="z-50 h-16 sticky top-0 w-full border-b bg-white">
+        <header className="z-50 h-16 sticky top-0 w-full border-b bg-background">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-7xl">
                 <Link href="/" className="font-bold text-xl tracking-tight flex items-center gap-2">
-                    <span>🍽️</span> Tea 20
+                    <Image src="/t20-logo.jpg" alt="Logo" width={50} height={50} className="rounded-full" />
                 </Link>
 
                 <nav className="flex items-center gap-4">
