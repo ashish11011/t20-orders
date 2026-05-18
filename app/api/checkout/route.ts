@@ -6,16 +6,15 @@ import { eq } from "drizzle-orm";
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { name, mobile, email, tableName, message, cartItems, totalPricing } = body;
+        const { name, mobile, email, tableCode, message, cartItems, totalPricing } = body;
 
         // 1. Check or insert table
-        let tableRecord = await db.select().from(table).where(eq(table.name, tableName)).limit(1);
-        let tableId;
-        if (tableRecord.length > 0) {
-            tableId = tableRecord[0].id;
-        } else {
-            // const newTable = await db.insert(table).values({ name: tableName }).returning();
-            // tableId = newTable[0].id;
+        let tableId = null;
+        if (tableCode) {
+            let tableRecord = await db.select().from(table).where(eq(table.tableCode, tableCode)).limit(1);
+            if (tableRecord.length > 0) {
+                tableId = tableRecord[0].id;
+            }
         }
 
         // 2. Insert user

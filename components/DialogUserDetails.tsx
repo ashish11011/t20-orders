@@ -24,7 +24,6 @@ const formSchema = z.object({
     mobile: z
         .string()
         .regex(/^[6-9]\d{9}$/, "Enter valid mobile number"),
-    tableName: z.string().min(1, "Table name required"),
     email: z.string().email("Invalid email").optional().or(z.literal("")),
     message: z.string().optional(),
 });

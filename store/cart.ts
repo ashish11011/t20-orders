@@ -19,18 +19,25 @@ export interface CartItem {
 
 interface CartState {
     items: CartItem[];
+    tableCode?: string;
+    orderType: string;
     addItem: (dish: Dish, selectedOptions?: SelectedOption[]) => void;
     removeItem: (cartItemId: string) => void;
     updateQuantity: (cartItemId: string, quantity: number) => void;
     clearCart: () => void;
     getTotalItems: () => number;
     getTotalPrice: () => number;
+    setTableCode: (code?: string) => void;
+    setOrderType: (type: string) => void;
 }
 
 export const useCartStore = create<CartState>()(
     persist(
         (set, get) => ({
             items: [],
+            orderType: 'dineout',
+            setTableCode: (code) => set({ tableCode: code }),
+            setOrderType: (type) => set({ orderType: type }),
 
             addItem: (dish, selectedOptions = []) => {
                 const currentItems = get().items;

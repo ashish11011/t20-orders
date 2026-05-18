@@ -6,22 +6,13 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { Search, X } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { useRouter, useSearchParams } from "next/navigation";
-
-type Dish = {
-    id: number;
-    name: string;
-    description: string | null;
-    price: number;
-    imageUrl: string | null;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-};
+import { useCartStore } from "@/store/cart";
 
 export function ClientMenu({ initialDishes }: { initialDishes: any }) {
     const [searchQuery, setSearchQuery] = useState("");
     const searchParams = useSearchParams();
-    const tableCode = searchParams.get("tc");
-    const [orderType, setOrderType] = useState("dineout");
+    const tableCodeQuery = searchParams.get("tc");
+    const { orderType, setOrderType, setTableCode, tableCode } = useCartStore();
     const router = useRouter();
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,25 +21,36 @@ export function ClientMenu({ initialDishes }: { initialDishes: any }) {
 
     const filteredDishes = initialDishes.map((category: any) => {
         return { ...category, dishes: category.dishes.filter((dish: any) => dish.name.toLowerCase().includes(searchQuery.toLowerCase()) || dish.category.toLowerCase().includes(searchQuery.toLowerCase()) || dish.description.toLowerCase().includes(searchQuery.toLowerCase())) }
-    })
+    });
 
     let dishCount = filteredDishes.reduce((acc: number, category: any) => acc + category.dishes.length, 0);
 
     useEffect(() => {
         async function validateTable() {
-            if (orderType !== "dineout") {
-                if (!tableCode) router.push("/qr")
-                const tableCodes = await fetch('/api/table/${tableCode}', {
+            // Priority: Check URL query first, then fall back to store.
+            const currentCode = tableCodeQuery || tableCode;
+            if (currentCode) {
+                //valideate qr code 
+                const res = await fetch(`/api/table/${currentCode}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ orderType }),
+                    body: JSON.stringify({ tableCode: currentCode }),
                 });
+                const isValideCode = await res.json();
+                if (!isValideCode) {
+                    router.push("/qr")
+                } else {
+                    setOrderType("dinein")
+                    setTableCode(currentCode);
+                }
+            } else if (orderType !== "dineout") {
+                router.push("/qr")
             }
         }
         validateTable();
-    }, [orderType])
+    }, [orderType, tableCodeQuery, tableCode])
 
     return (
         <>

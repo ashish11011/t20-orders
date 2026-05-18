@@ -6,6 +6,8 @@ import { Html5Qrcode } from "html5-qrcode";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
+const BASE_URL = "http://192.168.1.10:3000"
+
 export default function ScanQrPage() {
     const scannerRef = useRef<Html5Qrcode | null>(null);
 
@@ -37,10 +39,8 @@ export default function ScanQrPage() {
                 },
                 async (decodedText) => {
                     await stopScanner();
-
                     const isValidQr =
-                        decodedText.includes("taffeta.com/order");
-
+                        decodedText.includes(BASE_URL);
                     if (!isValidQr) {
                         setInvalidQr(true);
                         return;
@@ -108,11 +108,11 @@ export default function ScanQrPage() {
 
                             <p className="mt-3 text-sm text-muted-foreground">
                                 Seems like this QR doesn’t belong to
-                                taffeta.
+                                Tea 20.
                             </p>
 
                             <p className="text-sm text-muted-foreground">
-                                Please scan a valid taffeta QR code.
+                                Please scan a valid Tea 20 QR code.
                             </p>
 
                             <Button

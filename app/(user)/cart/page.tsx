@@ -18,7 +18,7 @@ export default function CartPage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsOrderDone(false);
-        }, 2000);
+        }, 5000);
         return () => clearTimeout(timer);
     }, [isOrderDone])
 
@@ -27,6 +27,7 @@ export default function CartPage() {
     const removeItem = useCartStore((state) => state.removeItem);
     const clearCart = useCartStore((state) => state.clearCart);
     const totalAmount = useCartStore((state) => state.getTotalPrice());
+    const tableCode = useCartStore((state) => state.tableCode);
 
     useEffect(() => {
         setMounted(true);
@@ -63,7 +64,7 @@ export default function CartPage() {
                                 </div>
                             </div>
                         </div>
-                        <OrderSummary setIsOrderDone={setIsOrderDone} totalAmount={totalAmount} cartItems={cartItems} clearCart={clearCart} />
+                        <OrderSummary setIsOrderDone={setIsOrderDone} totalAmount={totalAmount} cartItems={cartItems} clearCart={clearCart} tableCode={tableCode} />
 
                     </div>
                 )}
@@ -73,7 +74,7 @@ export default function CartPage() {
 }
 
 
-function OrderSummary({ totalAmount, cartItems, clearCart, setIsOrderDone }: { totalAmount: number, cartItems: any[], clearCart: () => void, setIsOrderDone: (value: boolean) => void }) {
+function OrderSummary({ totalAmount, cartItems, clearCart, setIsOrderDone, tableCode }: { totalAmount: number, cartItems: any[], clearCart: () => void, setIsOrderDone: (value: boolean) => void, tableCode?: string }) {
     const GSTAmount = Number(totalAmount * 0.18).toFixed();
     const totalAmountWithGST = Number(totalAmount) + Number(GSTAmount);
     const [open, setOpen] = useState(false);
@@ -86,6 +87,7 @@ function OrderSummary({ totalAmount, cartItems, clearCart, setIsOrderDone }: { t
                 body: JSON.stringify({
                     ...data,
                     cartItems,
+                    tableCode,
                     totalPricing: totalAmountWithGST
                 })
             });
@@ -132,28 +134,27 @@ function OrderSummary({ totalAmount, cartItems, clearCart, setIsOrderDone }: { t
             <DialogUserDetails
                 open={open}
                 onOpenChange={setOpen}
-                data={{ tableName: "Table 5" }}
                 onSubmit={handleSubmit}
             />
         </div>
     )
 }
 
-function EmptyCart({ isOrderDone }: { isOrderDone: boolean }) {
+function EmptyCart({ isOrderDone = true }: { isOrderDone: boolean }) {
     return (
         <div className="text-center py-20 bg-card rounded-2xl border shadow-sm">
-            <div className={cn("mx-auto w-24 h-24  rounded-full flex items-center justify-center mb-6", isOrderDone ? " bg-green-200" : "bg-muted")}>
+            <div className={cn("mx-auto w-24 h-24  rounded-full flex items-center justify-center mb-6", isOrderDone ? " bg-primary/10" : "bg-muted")}>
                 <ShoppingBag className="h-10 w-10 text-muted-foreground" />
             </div>
             <h2 className="text-2xl font-bold mb-2">{isOrderDone ? "Ordered placed successfully" : "Your cart is empty"}</h2>
-            {!isOrderDone && <>
+            {!isOrderDone ? <>
                 <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
                     Looks like you haven't added any delicious dishes to your cart yet.
                 </p>
                 <Button size="lg" asChild className="rounded-full">
-                    <Link href="/">Browse Menu</Link>
+                    <Link href="/">Place New Order</Link>
                 </Button>
-            </>}
+            </> : <p className=" mt-4">To know about your order, <br /> you can contact the counter person.</p>}
         </div>
     )
 }
