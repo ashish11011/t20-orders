@@ -21,7 +21,7 @@ interface CartState {
     items: CartItem[];
     tableCode?: string;
     orderType: string;
-    addItem: (dish: Dish, selectedOptions?: SelectedOption[]) => void;
+    addItem: (dish: any, selectedOptions?: SelectedOption[]) => void;
     removeItem: (cartItemId: string) => void;
     updateQuantity: (cartItemId: string, quantity: number) => void;
     clearCart: () => void;

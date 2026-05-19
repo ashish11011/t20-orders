@@ -113,7 +113,7 @@ export function OrderDialogClient({ order }: { order: any }) {
                                             className="border rounded px-2 py-1 text-sm bg-background flex-1"
                                         >
                                             <option value="pending">Pending</option>
-                                            <option value="completed">Completed</option>
+                                            <option value="completed">Mix</option>
                                             <option value="cancelled">Cancelled</option>
                                             <option value="paid_online">Paid Online</option>
                                             <option value="paid_cash">Paid Cash</option>
@@ -237,7 +237,7 @@ export function OrderDialogClient({ order }: { order: any }) {
                                                     <div className="w-10 h-10 bg-muted rounded flex items-center justify-center text-[10px]">No Img</div>
                                                 )}
                                             </td>
-                                            <td className="p-3 font-medium">{item.dishName}</td>
+                                            <td className="p-3 font-medium">{item.dishName} {item?.options?.map((option: any) => `(${option.name})`).join(", ")}</td>
                                             <td className="p-3">Rs. {item.pricing}</td>
                                             <td className="p-3">{item.quantity}</td>
                                             <td className="p-3 text-right font-semibold">Rs. {item.pricing * item.quantity}</td>

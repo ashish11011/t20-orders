@@ -45,6 +45,7 @@ export async function getOrderDetails(orderId: number) {
             pricing: orderItem.pricing,
             dishName: dish.name,
             imageUrl: dish.imageUrl,
+            options: orderItem.options,
         })
         .from(orderItem)
         .leftJoin(dish, eq(orderItem.dishId, dish.id))
@@ -60,10 +61,10 @@ export async function updateOrderStatus(orderId: number, status: 'pending' | 'co
     revalidatePath("/admin/orders");
 }
 
-export async function updateOrderAdvanced(orderId: number, data: { 
-    status: 'pending' | 'completed' | 'cancelled' | 'paid_online' | 'paid_cash' | 'paid_user', 
-    isRunning: boolean, 
-    lendingUserId?: number | null, 
+export async function updateOrderAdvanced(orderId: number, data: {
+    status: 'pending' | 'completed' | 'cancelled' | 'paid_online' | 'paid_cash' | 'paid_user',
+    isRunning: boolean,
+    lendingUserId?: number | null,
     totalPricing: number,
     paidOnline?: number,
     paidCash?: number,

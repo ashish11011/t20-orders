@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dish, SelectedOption, useCartStore } from "@/store/cart";
 import { Button } from "@/components/ui/button";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
@@ -24,7 +24,10 @@ export function DishCard({ dish }: { dish: any }) {
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState<SelectedOption[]>([]);
-    const [selectedVariants, setSelectedVariants] = useState<SelectedOption[]>([]);
+    const [selectedAddons, setSelectedAddons] = useState<SelectedOption[]>([]);
+    const [selectedVariants, setSelectedVariants] = useState<SelectedOption[]>(
+        Array.isArray(dish.dishVarients) && dish.dishVarients.length > 0 ? [dish.dishVarients[0]] : []
+    );
 
     const dishCartItems = cartItems.filter((item) => item.dish.id === dish.id);
     const quantity = dishCartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -32,10 +35,15 @@ export function DishCard({ dish }: { dish: any }) {
     const hasAddons = Array.isArray(dish.addons) && dish.addons.length > 0;
     const hasVariants = Array.isArray(dish.dishVarients) && dish.dishVarients.length > 0;
     const isCustomizable = hasOptions || hasAddons || hasVariants;
+
+    useEffect(() => {
+        console.log(selectedVariants)
+    }, [selectedVariants])
+
     const handleAdd = () => {
         if (isCustomizable) {
             setSelectedOptions([]);
-            setSelectedVariants([]);
+            setSelectedVariants(hasVariants ? [dish.dishVarients[0]] : []);
             setIsDrawerOpen(true);
         } else {
             addItem(dish);
@@ -45,7 +53,7 @@ export function DishCard({ dish }: { dish: any }) {
     const handleIncrement = () => {
         if (isCustomizable) {
             setSelectedOptions([]);
-            setSelectedVariants([]);
+            setSelectedVariants(hasVariants ? [dish.dishVarients[0]] : []);
             setIsDrawerOpen(true);
         } else {
             const defaultItem = dishCartItems.find(item => item.cartItemId === String(dish.id));
@@ -73,6 +81,7 @@ export function DishCard({ dish }: { dish: any }) {
 
     const confirmAddOptions = () => {
         addItem(dish, [...selectedVariants, ...selectedOptions]);
+        selectedAddons.forEach(option => addItem({ ...option }));
         setIsDrawerOpen(false);
     };
 
@@ -83,17 +92,26 @@ export function DishCard({ dish }: { dish: any }) {
             return [...prev, option];
         });
     };
+    const toggleAddons = (option: any) => {
+        setSelectedAddons(prev => {
+            const exists = prev.find(o => o.id === option.id);
+            if (exists) return prev.filter(o => o.id !== option.id);
+            return [...prev, option];
+        });
+    };
 
     const toggleVariant = (variant: any) => {
         setSelectedVariants(prev => {
+            const maxSelect = dish.maxSelectVarient || 1;
+
+            if (maxSelect === 1) {
+                return [variant];
+            }
+
             const exists = prev.find(v => v.id === variant.id);
             if (exists) return prev.filter(v => v.id !== variant.id);
-            
-            const maxSelect = dish.maxSelectVarient || 1;
+
             if (prev.length >= maxSelect) {
-                if (maxSelect === 1) {
-                    return [variant];
-                }
                 return prev;
             }
             return [...prev, variant];
@@ -106,7 +124,7 @@ export function DishCard({ dish }: { dish: any }) {
                 <div className=" flex flex-col grow">
                     <h3 className="font-medium leading-tight tracking-tight mb-1">{dish.name}</h3>
                     <div className="flex items-center justify-between ">
-                        <span className=" text-sm font-medium">Rs. {dish.price}</span>
+                        <span className=" text-sm font-medium">Rs.  {hasVariants ? dish.dishVarients[0].price : dish.price}</span>
                     </div>
                     {dish.description && (
                         <p className="text-sm text-muted-foreground mt-2 line-clamp-2 mb-4 grow">
@@ -209,7 +227,7 @@ export function DishCard({ dish }: { dish: any }) {
                         {hasOptions && (
                             <div className=" overflow-hidden pb-0 border rounded-lg border-dashed mb-6">
                                 <div className=" bg-gray-50 px-4 py-3 border-b border-dashed">
-                                    <p className=" font-medium "> Options  </p>
+                                    <p className=" font-medium "> Addons  </p>
                                 </div>
                                 <div className="">
                                     {dish.dishOptions.map((option: any) => {
@@ -239,41 +257,41 @@ export function DishCard({ dish }: { dish: any }) {
                         {hasAddons && (
                             <div className=" overflow-hidden pb-0 border rounded-lg border-dashed mb-6">
                                 <div className=" bg-gray-50 px-4 py-3 border-b border-dashed">
-                                    <p className=" font-medium "> Addons </p>
+                                    <p className=" font-medium "> Must try </p>
                                 </div>
-                            <div className="">
-                                {Array.isArray(dish.addons) && dish.addons.map((option: any) => {
-                                    const isSelected = selectedOptions.some(o => o.id === option.id);
-                                    return (
-                                        <div
-                                            key={option.id}
-                                            className="flex items-center justify-between p-3  cursor-pointer hover:bg-muted/50"
-                                            onClick={() => toggleOption(option)}
-                                        >
-                                            <span className=" text-sm  font-medium">{option.name}</span>
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-muted-foreground">Rs. {option.price}</span>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={isSelected}
-                                                    readOnly
-                                                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                                                />
+                                <div className="">
+                                    {Array.isArray(dish.addons) && dish.addons.map((option: any) => {
+                                        const isSelected = selectedAddons.some(o => o.id === option.id);
+                                        return (
+                                            <div
+                                                key={option.id}
+                                                className="flex items-center justify-between p-3  cursor-pointer hover:bg-muted/50"
+                                                onClick={() => toggleAddons(option)}
+                                            >
+                                                <span className=" text-sm  font-medium">{option.name}</span>
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-muted-foreground">Rs. {option.price}</span>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected}
+                                                        readOnly
+                                                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         )}
                     </div>
                     <DrawerFooter>
-                        <Button 
-                            className=" h-10" 
+                        <Button
+                            className=" h-10"
                             onClick={confirmAddOptions}
                             disabled={selectedVariants.length < (dish.minSelectVarient || 0)}
                         >
-                            Add to Cart - Rs. {dish.price + selectedOptions.reduce((sum, opt) => sum + opt.price, 0) + selectedVariants.reduce((sum, opt) => sum + opt.price, 0)}
+                            Add to Cart - Rs. {(hasVariants && selectedVariants.length > 0 ? 0 : dish.price) + selectedOptions.reduce((sum, opt) => sum + opt.price, 0) + selectedVariants.reduce((sum, opt) => sum + opt.price, 0)}
                         </Button>
                     </DrawerFooter>
 

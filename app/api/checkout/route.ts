@@ -41,6 +41,7 @@ export async function POST(req: Request) {
                 dishId: item.dish.id,
                 pricing: item.dish.price,
                 quantity: item.quantity,
+                options: item.selectedOptions || [],
             }));
             await db.insert(orderItem).values(itemsToInsert);
         }
