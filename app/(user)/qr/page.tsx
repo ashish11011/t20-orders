@@ -5,6 +5,7 @@ import { Html5Qrcode } from "html5-qrcode";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { redirect } from "next/navigation";
 
 const BASE_URL = "http://192.168.1.10:3000"
 // const BASE_URL = "https://t20-orders.vercel.app"
@@ -47,7 +48,7 @@ export default function ScanQrPage() {
                         return;
                     }
 
-                    window.location.href = decodedText;
+                    redirect(decodedText)
                 },
                 () => { }
             );

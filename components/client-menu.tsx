@@ -5,13 +5,11 @@ import { DishCard } from "@/components/dish-card";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Search, X } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cart";
 
-export function ClientMenu({ initialDishes }: { initialDishes: any }) {
+export function ClientMenu({ initialDishes, currentTable }: { initialDishes: any, currentTable?: { id: number, name: string, tableCode: string } }) {
     const [searchQuery, setSearchQuery] = useState("");
-    const searchParams = useSearchParams();
-    const tableCodeQuery = searchParams.get("tc");
     const { orderType, setOrderType, setTableCode, tableCode } = useCartStore();
     const router = useRouter();
 
@@ -27,29 +25,13 @@ export function ClientMenu({ initialDishes }: { initialDishes: any }) {
 
     useEffect(() => {
         async function validateTable() {
-            // Priority: Check URL query first, then fall back to store.
 
-            if (tableCodeQuery) {
-                //valideate qr code 
-                const res = await fetch(`/api/table/${tableCodeQuery}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ tableCode: tableCodeQuery }),
-                });
-                const isValideCode = await res.json();
-                if (!isValideCode) {
-                    router.push("/qr");
-                } else {
-                    setTableCode(tableCodeQuery)
-                    setOrderType("dinein");
-                }
+            if (currentTable) {
+                setTableCode(currentTable?.name)
+                setOrderType("dinein");
             } else {
-                setTableCode(undefined)
                 setOrderType("dineout")
             }
-
         }
         validateTable();
     }, []);
@@ -80,6 +62,8 @@ export function ClientMenu({ initialDishes }: { initialDishes: any }) {
                     onValueChange={(value) => {
                         if (value === "dinein") {
                             router.push("/qr")
+                        } else {
+                            router.push("/takeaway")
                         }
                     }}
                 >
