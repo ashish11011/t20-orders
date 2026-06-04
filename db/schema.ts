@@ -90,6 +90,7 @@ export const order = pgTable("order", {
     lendingUserId: integer("lending_user_id").references(() => user.id),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
+    message: varchar("message", { length: 255 }),
 });
 
 export const orderItem = pgTable("order_item", {

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { redirect } from "next/navigation";
 
-const BASE_URL = "http://192.168.1.10:3000"
+const BASE_URL = "https://www.tea20cafe.in"
 // const BASE_URL = "https://t20-orders.vercel.app"
 
 export default function ScanQrPage() {

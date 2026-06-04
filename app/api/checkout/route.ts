@@ -19,12 +19,23 @@ export async function POST(req: Request) {
         }
 
         // 2. Insert user
-        const newUser = await db.insert(user).values({
-            name,
-            email: email || null,
-            number: mobile,
-        }).returning();
-        const userId = newUser[0].id;
+
+        const [existingUser] = await db.select({ id: user.id }).from(user).where(eq(user.number, mobile)).limit(1);
+        let userId = null;
+        if (existingUser) {
+            await db.update(user).set({
+                name,
+                email: email || null,
+            }).where(eq(user.id, existingUser.id));
+            userId = existingUser.id;
+        } else {
+            const [newUser] = await db.insert(user).values({
+                name,
+                email: email || null,
+                number: mobile,
+            }).returning();
+            userId = newUser.id;
+        }
 
         // 3. Insert order
         const newOrder = await db.insert(order).values({
@@ -32,6 +43,7 @@ export async function POST(req: Request) {
             userId,
             totalPricing,
             status: "pending",
+            message
         }).returning();
         const orderId = newOrder[0].id;
 
