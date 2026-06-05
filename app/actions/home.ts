@@ -40,7 +40,7 @@ async function getMenu() {
         .leftJoin(addons, eq(dish.id, addons.dishId))
         .leftJoin(addonDish, eq(addons.addOnId, addonDish.id))
 
-    data.sort((a, b) => (b.dishPriority || 0) - (a.dishPriority || 0));
+    data.sort((a, b) => (a.dishPriority || 0) - (b.dishPriority || 0));
 
     const grouped = Object.values(
         data.reduce((acc, row) => {
@@ -86,7 +86,7 @@ async function getMenu() {
 
 
 
-    return grouped.sort((a: any, b: any) => (b.categoryPriority || 0) - (a.categoryPriority || 0));
+    return grouped.sort((a: any, b: any) => (a.categoryPriority || 0) - (b.categoryPriority || 0));
 }
 
 // ✅ cached function
